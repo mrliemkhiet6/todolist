@@ -6,6 +6,8 @@ import TasksPage from '../components/TasksPage';
 import ProjectsPage from '../components/ProjectsPage';
 import AnalyticsPage from '../components/AnalyticsPage';
 import SettingsPage from '../components/SettingsPage';
+import CalendarPage from '../components/CalendarPage';
+import TeamPage from '../components/TeamPage';
 import { useTaskStore } from '../store/taskStore';
 import { useAuthStore } from '../store/authStore';
 
@@ -29,7 +31,9 @@ const DashboardPage = () => {
           <Routes>
             <Route path="/" element={<TasksPage />} />
             <Route path="/projects" element={<ProjectsPage />} />
+            <Route path="/calendar" element={<CalendarPage />} />
             <Route path="/analytics" element={<AnalyticsPage />} />
+            <Route path="/team" element={<TeamPage />} />
             <Route path="/settings" element={<SettingsPage />} />
           </Routes>
         </main>

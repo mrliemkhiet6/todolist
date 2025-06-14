@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { 
   CheckCircle, 
@@ -21,6 +21,7 @@ const Sidebar = () => {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [showProjectModal, setShowProjectModal] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
   const { projects, currentProject, setCurrentProject, fetchProjects, tasks } = useTaskStore();
   const { profile } = useAuthStore();
 
@@ -80,6 +81,10 @@ const Sidebar = () => {
     return location.pathname.startsWith(path);
   };
 
+  const handleNavigation = (path: string) => {
+    navigate(path);
+  };
+
   return (
     <>
       <motion.div 
@@ -116,10 +121,10 @@ const Sidebar = () => {
         {/* Navigation */}
         <nav className="flex-1 p-4 space-y-2">
           {menuItems.map((item, index) => (
-            <Link
+            <button
               key={index}
-              to={item.path}
-              className={`flex items-center space-x-3 px-3 py-2 rounded-lg transition-all duration-200 group ${
+              onClick={() => handleNavigation(item.path)}
+              className={`w-full flex items-center space-x-3 px-3 py-2 rounded-lg transition-all duration-200 group ${
                 isActive(item.path)
                   ? 'bg-blue-50 text-blue-700 border-r-2 border-blue-600'
                   : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
@@ -138,7 +143,7 @@ const Sidebar = () => {
                   )}
                 </>
               )}
-            </Link>
+            </button>
           ))}
         </nav>
 

@@ -11,6 +11,7 @@ import {
   User,
   ChevronDown
 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../store/authStore';
 import { useTaskStore } from '../store/taskStore';
 import { supabase } from '../lib/supabase';
@@ -24,6 +25,7 @@ const Header = () => {
   const [showTaskModal, setShowTaskModal] = useState(false);
   const [notifications, setNotifications] = useState<any[]>([]);
   
+  const navigate = useNavigate();
   const { user, profile, logout } = useAuthStore();
   const { currentProject, tasks, fetchTasks } = useTaskStore();
 
@@ -83,6 +85,22 @@ const Header = () => {
         console.error('Search error:', error);
       }
     }
+  };
+
+  const handleProfileClick = () => {
+    setShowUserMenu(false);
+    navigate('/dashboard/settings');
+  };
+
+  const handleSettingsClick = () => {
+    setShowUserMenu(false);
+    navigate('/dashboard/settings');
+  };
+
+  const handleLogout = async () => {
+    setShowUserMenu(false);
+    await logout();
+    navigate('/');
   };
 
   return (
@@ -200,17 +218,23 @@ const Header = () => {
                   className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 z-50"
                 >
                   <div className="p-2">
-                    <button className="w-full flex items-center space-x-2 px-3 py-2 text-left hover:bg-gray-100 rounded-lg transition-colors">
+                    <button 
+                      onClick={handleProfileClick}
+                      className="w-full flex items-center space-x-2 px-3 py-2 text-left hover:bg-gray-100 rounded-lg transition-colors"
+                    >
                       <User className="w-4 h-4 text-gray-400" />
                       <span className="text-sm text-gray-700">Profile</span>
                     </button>
-                    <button className="w-full flex items-center space-x-2 px-3 py-2 text-left hover:bg-gray-100 rounded-lg transition-colors">
+                    <button 
+                      onClick={handleSettingsClick}
+                      className="w-full flex items-center space-x-2 px-3 py-2 text-left hover:bg-gray-100 rounded-lg transition-colors"
+                    >
                       <Settings className="w-4 h-4 text-gray-400" />
                       <span className="text-sm text-gray-700">Settings</span>
                     </button>
                     <hr className="my-2 border-gray-200" />
                     <button 
-                      onClick={logout}
+                      onClick={handleLogout}
                       className="w-full flex items-center space-x-2 px-3 py-2 text-left hover:bg-gray-100 rounded-lg transition-colors text-red-600"
                     >
                       <LogOut className="w-4 h-4 text-red-500" />

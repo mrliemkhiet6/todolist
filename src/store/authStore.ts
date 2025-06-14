@@ -34,6 +34,17 @@ export const useAuthStore = create<AuthState>()(
           });
 
           if (error) {
+            // Don't require email confirmation - allow login even if email not confirmed
+            if (error.message.includes('Email not confirmed')) {
+              // Try to get the user anyway
+              const { data: userData } = await supabase.auth.getUser();
+              if (userData.user) {
+                set({ user: userData.user });
+                await get().fetchProfile();
+                set({ isLoading: false });
+                return;
+              }
+            }
             throw new Error(error.message);
           }
 
@@ -75,6 +86,7 @@ export const useAuthStore = create<AuthState>()(
                 name: name.trim(),
                 full_name: name.trim(),
               },
+              emailRedirectTo: undefined, // Disable email confirmation
             },
           });
 
@@ -144,8 +156,27 @@ export const useAuthStore = create<AuthState>()(
 
           if (error) {
             if (error.code === 'PGRST116') {
-              // Profile doesn't exist, this is expected for new users
-              console.log('Profile not found for user:', user.id);
+              // Profile doesn't exist, create it
+              const { error: createError } = await supabase
+                .from('profiles')
+                .insert({
+                  id: user.id,
+                  email: user.email!,
+                  name: user.user_metadata?.name || user.email!.split('@')[0],
+                });
+              
+              if (!createError) {
+                // Fetch the newly created profile
+                const { data: newProfile } = await supabase
+                  .from('profiles')
+                  .select('*')
+                  .eq('id', user.id)
+                  .single();
+                
+                if (newProfile) {
+                  set({ profile: newProfile });
+                }
+              }
               return;
             }
             throw error;
